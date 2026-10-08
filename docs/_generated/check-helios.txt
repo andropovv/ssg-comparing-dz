@@ -1,0 +1,20 @@
+Проверка https://se.ifmo.ru/~s487249/ssg/
+OK   HTTP 200 /
+OK   контрольная строка LAB1-SSG-REPORT-OK на /
+OK   HTTP 200 /p2/mkdocs/
+OK   контрольная строка P2-STRESS-PAGE-OK на /p2/mkdocs/
+OK   нет внешних script/link на /p2/mkdocs/
+OK   HTTP 200 /p2/sphinx/
+OK   контрольная строка P2-STRESS-PAGE-OK на /p2/sphinx/
+OK   нет внешних script/link на /p2/sphinx/
+OK   HTTP 200 /p2/pelican/
+OK   контрольная строка P2-STRESS-PAGE-OK на /p2/pelican/
+OK   нет внешних script/link на /p2/pelican/
+OK   поисковый индекс /search/search_index.json содержит «отладка»
+OK   поисковый индекс /p2/mkdocs/search/search_index.json содержит «колебания»
+OK   поисковый индекс /p2/sphinx/searchindex.js содержит «затухан»
+OK   MathJax без внешней сети: 10 формул отрендерено на /p2/mkdocs/
+OK   MathJax без внешней сети: 8 формул отрендерено на /p2/sphinx/
+OK   MathJax без внешней сети: 10 формул отрендерено на /p2/pelican/
+
+Итог: все проверки пройдены

@@ -1,0 +1,163 @@
+# Сборка отчёта и трёх стресс-страниц P2 → GitHub Pages и Helios (se.ifmo.ru).
+#
+# Основа — стартовый workflow GitHub «Static HTML» (Settings → Pages → Source: GitHub Actions):
+# configure-pages → upload-pages-artifact → deploy-pages. К нему добавлены сборка генераторами,
+# отдельная сборка под Helios (другой site_url), деплой по SSH/rsync и проверка результата.
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:          # на PR только сборка с --strict, без деплоя
+  workflow_dispatch:
+    inputs:
+      break_build:
+        description: "Вставить битую ссылку, чтобы получить проваленный запуск (для отчёта)"
+        type: boolean
+        default: false
+
+# Минимальные права по умолчанию; деплой-джобы расширяют их точечно.
+permissions:
+  contents: read
+
+# Не запускать два деплоя одновременно; незавершённый деплой не отменяем, чтобы не оставить сайт наполовину.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.14"
+  HELIOS_HOST: helios.cs.ifmo.ru
+  HELIOS_PORT: "2222"
+  HELIOS_USER: s487249
+  HELIOS_DIR: public_html/ssg          # отдельный подкаталог: остальной public_html не трогаем
+  HELIOS_URL: https://se.ifmo.ru/~s487249/ssg/
+
+jobs:
+  build:
+    name: build (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Одна и та же сборка дважды: site_url попадает в canonical, sitemap и 404.html
+        # абсолютными путями, поэтому артефакт для Pages на Helios не годится.
+        target: [pages, helios]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip                       # кэш wheel-ов по хэшу requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure Pages
+        id: pages
+        if: matrix.target == 'pages'
+        uses: actions/configure-pages@v5   # отдаёт base_url вида https://<user>.github.io/<repo>/
+
+      - name: Select site_url
+        run: |
+          if [ "${{ matrix.target }}" = "pages" ]; then
+            echo "SITE_URL=${{ steps.pages.outputs.base_url }}/" >> "$GITHUB_ENV"
+          else
+            echo "SITE_URL=${HELIOS_URL}" >> "$GITHUB_ENV"
+          fi
+          echo "REPO_URL=${{ github.server_url }}/${{ github.repository }}" >> "$GITHUB_ENV"
+
+      - name: Break the build on purpose
+        if: inputs.break_build
+        run: echo '[битая ссылка](no-such-page.md)' >> docs/index.md
+
+      - name: Build (mkdocs --strict, sphinx -W, pelican --fatal warnings)
+        run: |
+          start=$(date +%s%N)
+          ./scripts/build_all.sh
+          echo "Сборка (${{ matrix.target }}): $(( ($(date +%s%N) - start) / 1000000 )) мс" >> "$GITHUB_STEP_SUMMARY"
+          echo "Объём: $(du -sh _build/site | cut -f1), файлов: $(find _build/site -type f | wc -l)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Pages artifact
+        if: matrix.target == 'pages'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _build/site
+
+      - name: Upload Helios artifact
+        if: matrix.target == 'helios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-helios
+          path: _build/site
+          retention-days: 7
+
+  deploy-pages:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write       # публикация в Pages
+      id-token: write    # OIDC-токен, которым deploy-pages подтверждает происхождение артефакта
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  deploy-helios:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: helios
+      url: ${{ env.HELIOS_URL }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/helios_known_hosts
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v5
+        with:
+          name: site-helios
+          path: site
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.HELIOS_SSH_KEY }}   # приватный deploy-ключ, пароль от Helios в CI не хранится
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/helios && chmod 600 ~/.ssh/helios
+          # Ключ хоста закреплён в репозитории: подмена сервера даст ошибку, а не тихий деплой.
+          cp .github/helios_known_hosts ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        run: |
+          start=$(date +%s%N)
+          # --delete удаляет устаревшие файлы, но только внутри HELIOS_DIR.
+          # --chmod: nginx на Helios отдаёт только читаемые всеми файлы (иначе 403).
+          rsync -az --delete --chmod=D755,F644 --stats \
+            -e "ssh -p $HELIOS_PORT -i ~/.ssh/helios -o IdentitiesOnly=yes -o BatchMode=yes" \
+            site/ "$HELIOS_USER@$HELIOS_HOST:$HELIOS_DIR/" | tail -n 4
+          echo "Деплой на Helios: $(( ($(date +%s%N) - start) / 1000000 )) мс" >> "$GITHUB_STEP_SUMMARY"
+
+  verify:
+    needs: [deploy-pages, deploy-helios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # Код ответа, контрольные строки, поисковые индексы, отсутствие внешних CDN
+      # и рендер формул в Chrome (есть в образе ubuntu-latest) с заблокированным DNS
+      # для всех хостов, кроме проверяемого.
+      - name: Verify GitHub Pages
+        run: python scripts/check_site.py "${{ needs.deploy-pages.outputs.page_url }}"
+      - name: Verify Helios
+        if: ${{ !cancelled() }}
+        run: python scripts/check_site.py "$HELIOS_URL"

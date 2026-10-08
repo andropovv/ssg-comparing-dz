@@ -1,0 +1,20 @@
+# Виртуальное окружение
+.venv/
+venv/
+
+# Результаты сборки
+_build/
+site/
+p2/sphinx/_build/
+p2/shared/build/
+p2/mkdocs/docs/assets/
+p2/pelican/content/assets/
+
+# Кэш
+__pycache__/
+*.py[cod]
+.cache/
+p2/pelican/cache/
+.doctrees/
+.DS_Store
+.lighthouseci/

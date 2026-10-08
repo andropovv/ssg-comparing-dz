@@ -1,0 +1,76 @@
+site_name: "ЛР 1 · Генераторы статических сайтов"
+site_description: "Отчёт: сравнение SSG на Python, стресс-тест научного контента, CI/CD на GitHub Pages и Helios"
+site_author: "s487249"
+# Абсолютный адрес зависит от площадки: GitHub Pages (/<repo>/) или Helios (/~s487249/ssg/).
+# Подставляется из переменной окружения в CI, локально — localhost.
+site_url: !ENV [SITE_URL, "http://localhost:8000/"]
+repo_url: !ENV [REPO_URL, "https://github.com/"]
+edit_uri: ""
+docs_dir: docs
+site_dir: _build/site
+use_directory_urls: true
+strict: true
+# Таблицы замеров вставляются в страницы через snippets и сами страницами не публикуются.
+exclude_docs: |
+  _generated/
+copyright: "Контент — CC BY 4.0, код — MIT"
+
+theme:
+  name: material
+  language: ru
+  # По умолчанию Material грузит Roboto с fonts.googleapis.com (9 внешних запросов).
+  # Плагин privacy решает это скачиванием при сборке, но заодно тянет всё, что найдёт в plotly.min.js
+  # (+4,7 МБ: mermaid, стили карт). Системные шрифты проще и не требуют сети при сборке.
+  font: false
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: { icon: material/weather-night, name: "Тёмная тема" }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: { icon: material/weather-sunny, name: "Светлая тема" }
+
+plugins:
+  - search:
+      lang: [ru, en]
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      # Стандартный slugify выбрасывает кириллицу: «Литература» → #_1. Нужен Unicode-вариант.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds: { case: lower }
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: [!relative $docs_dir, !relative $config_dir]
+      check_paths: true
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Отчёт: index.md
+  - Ход работы: setup.md
+  - "T1. Сравнение генераторов": t1.md
+  - "P2. Стресс-тест": p2.md
+  - "CI/CD и развёртывание": ci.md
+  - Отладка: debugging.md
+  - Вывод: conclusion.md
+  - Лицензии: license.md

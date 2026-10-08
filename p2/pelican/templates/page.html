@@ -1,0 +1,27 @@
+{% extends "!theme/page.html" %}
+{% block head %}
+{{ super() }}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="{{ SITEURL }}/assets/favicon.png">
+<style>
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+  .cols img, figure img { max-width: 100%; height: auto; }
+  @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+  table.params { border-collapse: collapse; margin: 1em auto; }
+  table.params th, table.params td { border: 1px solid #ccc; padding: .3em .7em; text-align: center; }
+  figure { margin: 1em 0; text-align: center; }
+  .highlighttable { width: 100%; overflow-x: auto; display: block; }
+  .bibliography li { margin-bottom: .4em; }
+  /* Ссылки \eqref внутри SVG MathJax по умолчанию тёмно-синие и не видны на тёмной теме */
+  mjx-container a { fill: #d14; }
+</style>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]], tags: "ams" },
+    options: { ignoreHtmlClass: ".*|", processHtmlClass: "arithmatex" }
+  };
+</script>
+<script src="{{ SITEURL }}/assets/tex-svg.js" defer></script>
+<!-- defer: без него 4,7 МБ plotly.js в <head> блокируют первую отрисовку (LCP ~6 с на desktop) -->
+<script src="{{ SITEURL }}/assets/plotly.min.js" defer></script>
+{% endblock %}

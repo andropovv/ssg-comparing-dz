@@ -1,0 +1,86 @@
+{
+  "mkdocs": {
+    "mobile": {
+      "performance": 36,
+      "accessibility": 86,
+      "best-practices": 100,
+      "seo": 92,
+      "bytes": 7583210,
+      "requests": 26,
+      "external_requests": 9,
+      "external_hosts": [
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+      ],
+      "lcp_ms": 40280.490949999956,
+      "viewport_ok": true
+    },
+    "desktop": {
+      "performance": 69,
+      "accessibility": 86,
+      "best-practices": 100,
+      "seo": 92,
+      "bytes": 7583210,
+      "requests": 24,
+      "external_requests": 9,
+      "external_hosts": [
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+      ],
+      "lcp_ms": 6589.0448,
+      "viewport_ok": true
+    }
+  },
+  "sphinx": {
+    "mobile": {
+      "performance": 51,
+      "accessibility": 94,
+      "best-practices": 96,
+      "seo": 91,
+      "bytes": 7232908,
+      "requests": 17,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 27162.27685,
+      "viewport_ok": true
+    },
+    "desktop": {
+      "performance": 69,
+      "accessibility": 91,
+      "best-practices": 96,
+      "seo": 91,
+      "bytes": 7232908,
+      "requests": 17,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 4558.6005000000005,
+      "viewport_ok": true
+    }
+  },
+  "pelican": {
+    "mobile": {
+      "performance": 36,
+      "accessibility": 93,
+      "best-practices": 96,
+      "seo": 91,
+      "bytes": 7100825,
+      "requests": 12,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 37972.865300000005,
+      "viewport_ok": true
+    },
+    "desktop": {
+      "performance": 52,
+      "accessibility": 93,
+      "best-practices": 96,
+      "seo": 91,
+      "bytes": 7100825,
+      "requests": 12,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 6234.6947,
+      "viewport_ok": true
+    }
+  }
+}

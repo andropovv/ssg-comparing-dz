@@ -1,0 +1,52 @@
+site_name: "P2 · MkDocs Material"
+site_url: !ENV [SITE_URL, "http://localhost:8000/"]
+docs_dir: docs
+site_dir: ../../_build/site/p2/mkdocs
+use_directory_urls: true
+strict: true
+
+theme:
+  name: material
+  language: ru
+  # По умолчанию Material грузит Roboto с fonts.googleapis.com (9 внешних запросов).
+  # Плагин privacy решает это скачиванием при сборке, но заодно тянет всё, что найдёт в plotly.min.js
+  # (+4,7 МБ: mermaid, стили карт). Системные шрифты проще и не требуют сети при сборке.
+  font: false
+  features:
+    - content.code.copy
+
+plugins:
+  - search:
+      lang: ru
+  - bibtex:
+      bib_file: ../shared/refs.bib
+
+markdown_extensions:
+  - attr_list
+  - toc:
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds: { case: lower }
+  - md_in_html
+  - footnotes
+  - tables
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      linenums: true
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      # Путь считается от текущего каталога процесса, а не от mkdocs.yml, — привязываем к docs_dir.
+      base_path: !relative $docs_dir
+      check_paths: true
+  - pymdownx.blocks.caption:
+      types:
+        - name: figure-caption
+          prefix: "Рисунок {}."
+        - name: table-caption
+          prefix: "Таблица {}."
+
+extra_javascript:
+  - javascripts/mathjax-config.js
+  - assets/tex-svg.js
+  - assets/plotly.min.js

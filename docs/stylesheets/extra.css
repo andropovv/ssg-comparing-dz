@@ -1,0 +1,4 @@
+/* Матрицы T1/P2 широкие: стандартные 61rem контента не вмещают 5–6 столбцов. */
+.md-grid { max-width: 1440px; }
+.md-typeset table:not([class]) { font-size: .72rem; }
+.md-typeset table:not([class]) td { vertical-align: top; }

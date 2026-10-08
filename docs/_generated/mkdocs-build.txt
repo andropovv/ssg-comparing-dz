@@ -1,0 +1,6 @@
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: _build/site
+INFO    -  Doc file 'p2.md' contains an unrecognized relative link 'mkdocs/', it was left as is.
+INFO    -  Doc file 'p2.md' contains an unrecognized relative link 'sphinx/', it was left as is.
+INFO    -  Doc file 'p2.md' contains an unrecognized relative link 'pelican/', it was left as is.
+INFO    -  Documentation built in 0.19 seconds
