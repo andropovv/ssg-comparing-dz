@@ -25,6 +25,10 @@ bibtex_reference_style = "label"
 
 html_theme = "furo"
 html_title = project
+# Ссылка «назад» к отчёту: у Furo есть готовая полоса объявления, шаблон переопределять не нужно.
+html_theme_options = {
+    "announcement": '<a href="../" style="font-weight: 700; text-decoration: none;">← К отчёту: P2. Стресс-тест</a>',
+}
 html_static_path = ["../shared/build", "../shared/vendor"]
 html_js_files = ["plotly.min.js"]
 # Без favicon браузер запрашивает /favicon.ico в корне se.ifmo.ru, а тот редиректит на http:// —

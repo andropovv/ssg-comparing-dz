@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{# Полоса над шапкой на каждой странице отчёта: возврат на главную со списком всех работ. #}
+{% block announce %}
+<a class="back-home" href="https://se.ifmo.ru/~s487249/">
+  <span aria-hidden="true">←</span> Все лабораторные работы
+</a>
+{% endblock %}

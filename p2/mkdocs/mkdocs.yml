@@ -12,6 +12,7 @@ theme:
   # Плагин privacy решает это скачиванием при сборке, но заодно тянет всё, что найдёт в plotly.min.js
   # (+4,7 МБ: mermaid, стили карт). Системные шрифты проще и не требуют сети при сборке.
   font: false
+  custom_dir: overrides
   features:
     - content.code.copy
 

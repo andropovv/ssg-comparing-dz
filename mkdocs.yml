@@ -22,6 +22,8 @@ theme:
   # Плагин privacy решает это скачиванием при сборке, но заодно тянет всё, что найдёт в plotly.min.js
   # (+4,7 МБ: mermaid, стили карт). Системные шрифты проще и не требуют сети при сборке.
   font: false
+  # Переопределения шаблонов без форка темы: overrides/main.html добавляет ссылку на главную.
+  custom_dir: overrides
   features:
     - navigation.sections
     - navigation.top
@@ -30,11 +32,16 @@ theme:
     - content.code.annotate
     - search.highlight
   palette:
+    # Цвета — как на главной странице se.ifmo.ru/~s487249/ (индиго #4f46e5), см. stylesheets/extra.css.
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: custom
+      accent: custom
       toggle: { icon: material/weather-night, name: "Тёмная тема" }
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: custom
+      accent: custom
       toggle: { icon: material/weather-sunny, name: "Светлая тема" }
 
 plugins:
@@ -66,6 +73,7 @@ extra_css:
   - stylesheets/extra.css
 
 nav:
+  - "← Все лабораторные": https://se.ifmo.ru/~s487249/
   - Отчёт: index.md
   - Ход работы: setup.md
   - "T1. Сравнение генераторов": t1.md

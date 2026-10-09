@@ -12,6 +12,9 @@
   figure { margin: 1em 0; text-align: center; }
   .highlighttable { width: 100%; overflow-x: auto; display: block; }
   .bibliography li { margin-bottom: .4em; }
+  /* класс body из темы notmyidea даёт ту же ширину и центрирование, что у колонки контента */
+  .back-link { margin-bottom: 1em; font-weight: 700; }
+  .back-link a { text-decoration: none; }
   /* Ссылки \eqref внутри SVG MathJax по умолчанию тёмно-синие и не видны на тёмной теме */
   mjx-container a { fill: #d14; }
 </style>
@@ -24,4 +27,10 @@
 <script src="{{ SITEURL }}/assets/tex-svg.js" defer></script>
 <!-- defer: без него 4,7 МБ plotly.js в <head> блокируют первую отрисовку (LCP ~6 с на desktop) -->
 <script src="{{ SITEURL }}/assets/plotly.min.js" defer></script>
+{% endblock %}
+
+{# Ссылка «назад» к отчёту: страница лежит в /p2/pelican/, отчёт о P2 — в /p2/. #}
+{% block content %}
+<p class="back-link body"><a href="../">← К отчёту: P2. Стресс-тест</a></p>
+{{ super() }}
 {% endblock %}
