@@ -1,0 +1,110 @@
+{
+  "mkdocs": {
+    "mobile": {
+      "performance": 51,
+      "accessibility": 86,
+      "best-practices": 100,
+      "seo": 92,
+      "bytes": 2364339,
+      "requests": 17,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 13301.325,
+      "viewport_ok": true,
+      "performance_runs": [
+        49,
+        51,
+        52
+      ]
+    },
+    "desktop": {
+      "performance": 99,
+      "accessibility": 86,
+      "best-practices": 100,
+      "seo": 92,
+      "bytes": 2364339,
+      "requests": 15,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 473.52700000000004,
+      "viewport_ok": true,
+      "performance_runs": [
+        97,
+        99,
+        99
+      ]
+    }
+  },
+  "sphinx": {
+    "mobile": {
+      "performance": 51,
+      "accessibility": 94,
+      "best-practices": 100,
+      "seo": 91,
+      "bytes": 2329084,
+      "requests": 17,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 12786.6965,
+      "viewport_ok": true,
+      "performance_runs": [
+        49,
+        52,
+        51
+      ]
+    },
+    "desktop": {
+      "performance": 96,
+      "accessibility": 91,
+      "best-practices": 100,
+      "seo": 91,
+      "bytes": 2329035,
+      "requests": 17,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 543.8315,
+      "viewport_ok": true,
+      "performance_runs": [
+        92,
+        96,
+        96
+      ]
+    }
+  },
+  "pelican": {
+    "mobile": {
+      "performance": 50,
+      "accessibility": 93,
+      "best-practices": 100,
+      "seo": 91,
+      "bytes": 2321035,
+      "requests": 12,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 12751.5805,
+      "viewport_ok": true,
+      "performance_runs": [
+        60,
+        50,
+        50
+      ]
+    },
+    "desktop": {
+      "performance": 95,
+      "accessibility": 93,
+      "best-practices": 100,
+      "seo": 91,
+      "bytes": 2321013,
+      "requests": 12,
+      "external_requests": 0,
+      "external_hosts": [],
+      "lcp_ms": 1140.638,
+      "viewport_ok": true,
+      "performance_runs": [
+        95,
+        95,
+        95
+      ]
+    }
+  }
+}

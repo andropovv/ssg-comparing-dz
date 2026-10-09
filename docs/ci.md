@@ -3,7 +3,7 @@
 ## Схема пайплайна
 
 ```text
-push в main ─┬─ build (pages)  ── SITE_URL = https://<user>.github.io/<repo>/ ── upload-pages-artifact ── deploy-pages ──┐
+push в main ─┬─ build (pages)  ── SITE_URL = https://andropovv.github.io/ssg-comparing-dz/ ── upload-pages-artifact ── deploy-pages ──┐
              └─ build (helios) ── SITE_URL = https://se.ifmo.ru/~s487249/ssg/ ── upload-artifact ── deploy-helios (rsync) ─┴─ verify
 pull_request ── build (pages, helios) — только сборка в строгом режиме, без деплоя
 workflow_dispatch(break_build=true) ── вставляет битую ссылку → build падает (для скриншота проваленного запуска)
@@ -63,7 +63,7 @@ Helios — общий сервер кафедры (FreeBSD 14.5). nginx отда
 
 | Параметр | Значение | Что ломается при ошибке |
 |---|---|---|
-| `site_url` (MkDocs) | Своё для каждой площадки | `404.html` ссылается на `/<repo>/assets/...` — на Helios без стилей; неверные `canonical` и `sitemap.xml` |
+| `site_url` (MkDocs) | Своё для каждой площадки | `404.html` ссылается на `/ssg-comparing-dz/assets/...` — на Helios без стилей; неверные `canonical` и `sitemap.xml` |
 | `use_directory_urls: true` | `/setup/` → `setup/index.html` | Ничего: и GitHub Pages, и nginx отдают `index.html` для каталога. При открытии через `file://` ссылки на каталоги не работают — тогда нужен `false` |
 | Относительные ссылки в теле страниц | MkDocs делает их относительными сам | Абсолютные `/assets/...` в ручном HTML вели бы в корень `se.ifmo.ru` |
 | `RELATIVE_URLS = True` (Pelican) | Все ссылки темы относительные | Без него `SITEURL = ""` даёт пути от корня домена |
@@ -91,17 +91,65 @@ Helios — общий сервер кафедры (FreeBSD 14.5). nginx отда
 
 ## Время развёртывания
 
+### В CI (GitHub Actions, запуск #3)
+
+Данные взяты из API GitHub (`/actions/runs/37918009188/jobs`): время начала и конца каждого шага.
+
+| Джоб | Всего, с | Ключевые шаги |
+|---|---:|---|
+| build (pages) | 45 | установка зависимостей 26 с, сборка трёх генераторов 4 с, загрузка артефакта 3 с |
+| build (helios) | 43 | установка зависимостей 24 с, сборка 5 с, загрузка артефакта 3 с |
+| deploy-pages | 22 | `actions/deploy-pages` — 18 с (ожидание публикации на CDN GitHub) |
+| deploy-helios | 6 | `rsync` по SSH с раннера GitHub на Helios — 2 с |
+| verify | 54 | проверка Pages 31 с, проверка Helios 19 с (больше всего времени — headless Chrome) |
+| **Весь запуск** | **134** | две сборки идут параллельно, деплои тоже параллельно |
+
+Узкое место — установка 80 пакетов из `requirements.txt` (около 60 % времени сборки), а не сами
+генераторы. Кэш pip в `setup-python` экономит загрузку колёс, но не установку.
+
+### С рабочей машины на Helios (rsync)
+
 --8<-- "_generated/deploy.md"
 
 ## Запуски CI
 
-!!! warning "Заполняется после первого push"
-    Скриншоты успешного и проваленного запусков снимаются после публикации репозитория на GitHub
-    (см. README). Проваленный запуск воспроизводится без порчи истории: Actions → Build and deploy
-    → Run workflow → `break_build: true`. В `docs/index.md` вставляется ссылка на несуществующую
-    страницу, и `mkdocs build --strict` падает:
+### Успешный запуск
 
-    ```text
-    WARNING -  Doc file 'index.md' contains a link 'no-such-page.md', but the target is not found among documentation files.
-    Aborted with 1 warnings in strict mode!
-    ```
+[Build and deploy #3](https://github.com/andropovv/ssg-comparing-dz/actions/runs/37918009188),
+запущен вручную (`workflow_dispatch`) после включения Pages и добавления секрета:
+
+![Успешный запуск: все пять джобов зелёные, ссылки на обе площадки](img/ci-success.png)
+
+### Проваленный запуск
+
+[Build and deploy #2](https://github.com/andropovv/ssg-comparing-dz/actions/runs/37917473610):
+первый push, сделанный, пока репозиторий был приватным и Pages не были включены.
+
+![Сводка проваленного запуска: build (pages) упал, build (helios) отменён](img/ci-failed.png)
+
+![Шаги джоба build (pages): падение на Configure Pages, остальное пропущено](img/ci-failed-log.png)
+
+Текст ошибки из аннотаций запуска:
+
+```text
+HttpError: Resource not accessible by integration - https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site
+Get Pages site failed. Please verify that the repository has Pages enabled and configured to build
+using GitHub Actions, or consider exploring the `enablement` parameter for this action.
+The strategy configuration was canceled because "build.pages" failed
+```
+
+Разбор — в [Отладке](debugging.md). Ошибку можно воспроизвести и намеренно, через
+Actions → Run workflow → `break_build: true`: в `docs/index.md` добавляется битая ссылка, и
+`mkdocs build --strict` падает:
+
+```text
+WARNING -  Doc file 'index.md' contains a link 'no-such-page.md', but the target is not found among documentation files.
+Aborted with 1 warnings in strict mode!
+```
+
+### Предупреждения в успешном запуске
+
+| Аннотация | Что значит | Что сделать |
+|---|---|---|
+| `Node.js 20 is deprecated … actions/upload-artifact@v4`, `actions/configure-pages@v5` | Эти версии actions собраны под Node 20, раннер запускает их на Node 24 принудительно | Обновить до версий под Node 24 (на 09.10.2026: `upload-artifact@v7`, `configure-pages@v6`, `deploy-pages@v5`, `upload-pages-artifact@v5`, `download-artifact@v8`, `checkout@v7`, `setup-python@v7`) после чтения их changelog |
+| `The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026` | Образ раннера сменится | Для воспроизводимости закрепить `runs-on: ubuntu-24.04` |

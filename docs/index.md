@@ -10,9 +10,11 @@
 
 | Что | Адрес |
 |---|---|
-| Репозиторий | `https://github.com/<user>/<repo>` |
-| Сайт на GitHub Pages | `https://<user>.github.io/<repo>/` |
+| Репозиторий | <https://github.com/andropovv/ssg-comparing-dz> |
+| Сайт на GitHub Pages | <https://andropovv.github.io/ssg-comparing-dz/> |
+| Запуски CI | <https://github.com/andropovv/ssg-comparing-dz/actions> |
 | Сайт на Helios | <https://se.ifmo.ru/~s487249/ssg/> |
+| P2 на GitHub Pages | [MkDocs](https://andropovv.github.io/ssg-comparing-dz/p2/mkdocs/) · [Sphinx](https://andropovv.github.io/ssg-comparing-dz/p2/sphinx/) · [Pelican](https://andropovv.github.io/ssg-comparing-dz/p2/pelican/) |
 | P2 на Helios | [MkDocs](https://se.ifmo.ru/~s487249/ssg/p2/mkdocs/) · [Sphinx](https://se.ifmo.ru/~s487249/ssg/p2/sphinx/) · [Pelican](https://se.ifmo.ru/~s487249/ssg/p2/pelican/) |
 
 ## Состав работы

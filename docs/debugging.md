@@ -147,6 +147,34 @@ but requested an insecure favicon 'http://se.ifmo.ru/o/favicon/'.
 **Решение.** `html_favicon` в Sphinx и `<link rel="icon">` в шаблоне Pelican. Итог: 100 баллов.
 Ошибка показательна: она возникает только при размещении в подкаталоге чужого домена.
 
+## 9. CI: «Resource not accessible by integration» на Configure Pages
+
+**Ошибка.** Первые два запуска после push упали
+([#1](https://github.com/andropovv/ssg-comparing-dz/actions/runs/37917139939),
+[#2](https://github.com/andropovv/ssg-comparing-dz/actions/runs/37917473610)), скриншоты — в [CI/CD](ci.md#проваленный-запуск):
+
+```text
+HttpError: Resource not accessible by integration - https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site
+Get Pages site failed. Please verify that the repository has Pages enabled and configured to build using GitHub Actions
+The strategy configuration was canceled because "build.pages" failed
+```
+
+**Гипотеза.** `actions/configure-pages` запрашивает настройки Pages через API, а Pages для
+репозитория не включены. Сборка для Helios при этом исправна, её отменил `fail-fast` матрицы.
+
+**Проверка.** В Settings → Pages стояло «Upgrade or make this repository public to enable Pages»:
+репозиторий создан приватным, а на бесплатном тарифе Pages доступны только для публичных.
+После смены видимости публичный API (`GET /repos/andropovv/ssg-comparing-dz`) вернул `"private": false, "has_pages": true`.
+
+**Решение.** Перед публикацией вся история проверена на секреты (`git log -p --all`: ни пароля,
+ни приватного ключа). Затем репозиторий сделан публичным, Source: GitHub Actions, добавлен секрет
+`HELIOS_SSH_KEY`. После этого [запуск #3](https://github.com/andropovv/ssg-comparing-dz/actions/runs/37918009188)
+прошёл полностью.
+
+**Вывод для пайплайна.** Из-за `fail-fast: true` (значение по умолчанию) проблема одной площадки
+останавливает и другую. Если Helios важнее, матрице стоит поставить `fail-fast: false`, а деплои
+разнести по разным workflow.
+
 ## Прочие ошибки
 
 | Ошибка | Причина | Решение |

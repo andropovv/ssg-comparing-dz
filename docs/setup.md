@@ -95,7 +95,7 @@ Python 3.14.2
 
 ```console
 $ git init -b main && git add . && git commit -m "Lab 1: SSG comparison, P2 stress test, CI/CD"
-$ git remote add origin git@github.com:<user>/<repo>.git && git push -u origin main
+$ git remote add origin git@github.com:andropovv/ssg-comparing-dz.git && git push -u origin main
 ```
 
 В настройках репозитория: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
@@ -122,7 +122,7 @@ $ ssh-keyscan -p 2222 -t ed25519 helios.cs.ifmo.ru > .github/helios_known_hosts
 | Площадка | `SITE_URL` | Адрес отчёта |
 |---|---|---|
 | Локально | `http://localhost:8000/` | — |
-| GitHub Pages | `steps.pages.outputs.base_url` из `actions/configure-pages` | `https://<user>.github.io/<repo>/` |
+| GitHub Pages | `steps.pages.outputs.base_url` из `actions/configure-pages` | <https://andropovv.github.io/ssg-comparing-dz/> |
 | Helios | `https://se.ifmo.ru/~s487249/ssg/` | <https://se.ifmo.ru/~s487249/ssg/> |
 
 `site_url: !ENV [SITE_URL, ...]` в `mkdocs.yml` читает переменную окружения. P2-страница MkDocs

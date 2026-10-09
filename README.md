@@ -4,7 +4,8 @@
 (MkDocs Material, Sphinx + MyST, Pelican) с автоматическим развёртыванием на GitHub Pages и Helios ИТМО.
 
 - Helios: <https://se.ifmo.ru/~s487249/ssg/>
-- GitHub Pages: `https://<user>.github.io/<repo>/`
+- GitHub Pages: <https://andropovv.github.io/ssg-comparing-dz/>
+- Репозиторий: <https://github.com/andropovv/ssg-comparing-dz>
 
 ## Локальная сборка
 
